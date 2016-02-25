@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import subprocess
 import time
 from itertools import repeat
 from multiprocessing import Pool
 
-dataset = "/home/bdeng/datasets/speechdata_16kHz"
+parser = argparse.ArgumentParser(
+    description='Run F0 estimations on the given dataset.')
+parser.add_argument('dataset', help='path to the dataset')
+args = parser.parse_args()
+
+dataset = args.dataset
 
 jsnoori_path = "/home/bdeng/Documents/jsnoorijy"
 # jsnoori_jython_path = os.path.join(jsnoori_path, "jython.jar")
