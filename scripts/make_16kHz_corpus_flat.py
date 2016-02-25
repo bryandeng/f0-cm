@@ -14,10 +14,11 @@ wav_paths, ref_paths = [], []
 
 for root, dirs, files in os.walk(dataset_basedir):
     for name in files:
-        if os.path.splitext(name)[1] == '.wav':
-            wav_paths.append(os.path.join(root, name))
-        else:
+        if name.startswith('ref'):
             ref_paths.append(os.path.join(root, name))
+        elif name.startswith('mic'):
+            wav_paths.append(os.path.join(root, name))
+
 
 for src in ref_paths:
     dst = os.path.join(refs_folder, os.path.basename(src))
