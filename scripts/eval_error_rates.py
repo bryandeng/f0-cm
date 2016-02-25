@@ -1,26 +1,40 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import shelve
+from itertools import repeat
+from multiprocessing import Pool
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from itertools import repeat
-from multiprocessing import Pool
 
-timestamp = "2016-02-10-16-59-39"
+max_freq_deviation_percentage = 20
+offsets = range(-40, 41)
+
+parser = argparse.ArgumentParser(
+    description='Evaluate error rates based on experiments results.')
+parser.add_argument('timestamp',
+                    help='result folder name (a timestamp)')
+parser.add_argument("-v", "--verbose",
+                    help="store result series under series/",
+                    action="store_true")
+args = parser.parse_args()
+timestamp = args.timestamp
+verbose = args.verbose
+
 refs_folder = "/home/bdeng/datasets/speechdata_16kHz/ref"
 results_folder = os.path.join("/home/bdeng/datasets/results", timestamp)
 
 refs = os.listdir(refs_folder)
 
-max_freq_deviation_percentage = 20
-offsets = range(-40, 41)
+if verbose:
+    os.makedirs(os.path.join('series', timestamp))
 
 
-def error_count(ref, signal, method, offset):
-    # signal: mic/lar, method: martin/swipe/yin
+def error_count(ref, method, offset):
+    # method: martin/swipe/yin
     ref_values = pd.read_csv(
         os.path.join(refs_folder, ref),
         sep=' ',
@@ -32,7 +46,7 @@ def error_count(ref, signal, method, offset):
     )
     ref_values.index = ref_values.index * 10 + 16
 
-    result = signal + ref[3:-3] + "." + method + ".f0"
+    result = 'mic' + ref[3:-3] + '.' + method + '.f0'
     result_values = pd.read_csv(
         os.path.join(results_folder, result),
         header=None,
@@ -47,7 +61,7 @@ def error_count(ref, signal, method, offset):
     result_values = result_values.reindex(
         range(0, max(ref_values.index[-1], result_values.index[-1])+1)
     )
-    result_values_interpolated = result_values.interpolate(method='linear')
+    result_values_interpolated = result_values.interpolate(method='nearest')
 
     diff = result_values_interpolated.loc[ref_values.index] - ref_values
     ref_values_no_zero = ref_values[ref_values == 0] = 100
@@ -57,59 +71,51 @@ def error_count(ref, signal, method, offset):
 
     n_values = len(ref_values)
     n_errors = len(deviation[deviation > max_freq_deviation_percentage / 100])
+
+    if verbose:
+        csv_filename = os.path.join(
+            'series', timestamp,
+            result + '.' + str(offset) + '.interpolated.txt')
+        result_values_interpolated.to_csv(csv_filename, sep=' ', header=False)
     return n_values, n_errors
 
 
-def error_rate(signal, method, offset):
+def error_rate(method, offset):
     pool = Pool()
     error_counts = pool.starmap(
         error_count,
-        zip(refs, repeat(signal), repeat(method), repeat(offset)))
+        zip(refs, repeat(method), repeat(offset)))
     pool.close()
     n_values_total = sum(error_count_[0] for error_count_ in error_counts)
     n_errors_total = sum(error_count_[1] for error_count_ in error_counts)
     return n_errors_total/n_values_total
 
 
-def error_rates(signal, method):
-    results = [error_rate(signal, method, offset) for offset in offsets]
+def error_rates(method):
+    results = [error_rate(method, offset) for offset in offsets]
     return results
 
-d = shelve.open('error_rates_data.' + timestamp + '.shelve')
-if 'error_data' in d:
-    error_data = d['error_data']
-else:
-    error_data = {}
-    error_data['mic'], error_data['lar'] = {}, {}
-    for method in ['martin', 'swipe', 'yin']:
-        error_data['mic'][method] = error_rates('mic', method)
-        error_data['lar'][method] = error_rates('lar', method)
-    d['error_data'] = error_data
-d.close()
+os.makedirs('shelf', exist_ok=True)
 
-fig = plt.figure()
-fig.suptitle("Error rates under different offsets", fontsize=14,
-             fontweight='bold')
+with shelve.open(os.path.join('shelf', 'data.' + timestamp + '.shelve')) as db:
+    if 'error_stats' in db:
+        error_stats = db['error_stats']
+    else:
+        error_stats = {}
+        for method in ['martin', 'swipe', 'yin']:
+            error_stats[method] = error_rates(method)
+        db['error_stats'] = error_stats
 
-mic = fig.add_subplot(211)
-mic.set_title("MIC signal")
-mic.set_xlabel("offset (ms)")
-mic.set_ylabel("error rate")
-mic_m, = mic.plot(offsets, error_data['mic']['martin'], 'r-o', label="martin")
-mic_s, = mic.plot(offsets, error_data['mic']['swipe'], 'g-o', label="swipe")
-mic_y, = mic.plot(offsets, error_data['mic']['yin'], 'b-o', label="yin")
-# mic.legend(handles=[mic_m, mic_s, mic_y])
-mic.legend([mic_m, mic_s, mic_y])  # old matplotlib
 
-lar = fig.add_subplot(212)
-lar.set_title("LAR signal")
-lar.set_xlabel("offset (ms)")
-lar.set_ylabel("error rate")
-lar_m, = lar.plot(offsets, error_data['lar']['martin'], 'r-o', label="martin")
-lar_s, = lar.plot(offsets, error_data['lar']['swipe'], 'g-o', label="swipe")
-lar_y, = lar.plot(offsets, error_data['lar']['yin'], 'b-o', label="yin")
-# lar.legend(handles=[lar_m, lar_s, lar_y])
-lar.legend([lar_m, lar_s, lar_y])  # old matplotlib
+plt.title("Error rates under different offsets", fontsize=14,
+          fontweight='bold')
+plt.xlabel("offset (ms)")
+plt.ylabel("error rate")
+mic_m, = plt.plot(offsets, error_stats['martin'], 'r-o', label="martin")
+mic_s, = plt.plot(offsets, error_stats['swipe'], 'g-o', label="swipe")
+mic_y, = plt.plot(offsets, error_stats['yin'], 'b-o', label="yin")
+plt.legend(handles=[mic_m, mic_s, mic_y])
+plt.savefig(os.path.join('shelf', 'error_rates.' + timestamp + '.pdf'),
+            papertype='a4')
 
-fig.set_size_inches(8.27, 11.69)  # A4
-plt.savefig('error_rates.' + timestamp + '.pdf', papertype='a4')
+print("Done.")
