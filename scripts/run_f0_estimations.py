@@ -8,8 +8,8 @@ from multiprocessing import Pool
 
 dataset = "/home/bdeng/datasets/speechdata_16kHz"
 
-jsnoori_path = "/users/multispeech/bdeng/Documents/jsnoorijy"
-jsnoori_jython_path = os.path.join(jsnoori_path, "jython.jar")
+jsnoori_path = "/home/bdeng/Documents/jsnoorijy"
+# jsnoori_jython_path = os.path.join(jsnoori_path, "jython.jar")
 jsnoori_scripts_paths = {
     "martin": os.path.join(jsnoori_path, "script_martin_algorithm.py"),
     "swipe": os.path.join(jsnoori_path, "script_swipe_algorithm.py"),
@@ -32,7 +32,7 @@ def estimate(wav_path, method):
         results_folder,
         os.path.splitext(os.path.basename(wav_path))[0] + "." + method + ".f0")
     subprocess.check_call(
-        ["java", "-jar", jsnoori_jython_path,
+        ["jython",
          jsnoori_scripts_paths[method],
          "-i", wav_path, "-o", result_filepath] + jsnoori_params)
 
