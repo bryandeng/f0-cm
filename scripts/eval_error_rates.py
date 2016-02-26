@@ -6,9 +6,11 @@ import shelve
 from itertools import repeat
 from multiprocessing import Pool
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.ticker import FuncFormatter
 
 max_freq_deviation_percentage = 20
 offsets = range(-40, 41)
@@ -111,6 +113,22 @@ plt.title("Error rates under different offsets", fontsize=14,
           fontweight='bold')
 plt.xlabel("offset (ms)")
 plt.ylabel("error rate")
+
+
+def to_percent(y, position):
+    # Ignore the passed in position. This has the effect of scaling the default
+    # tick locations.
+    s = str(100 * y)
+
+    # The percent symbol needs escaping in latex
+    if matplotlib.rcParams['text.usetex'] is True:
+        return s + r'$\%$'
+    else:
+        return s + '%'
+
+formatter = FuncFormatter(to_percent)
+plt.gca().yaxis.set_major_formatter(formatter)
+
 mic_m, = plt.plot(offsets, error_stats['martin'], 'r-o', label="martin")
 mic_s, = plt.plot(offsets, error_stats['swipe'], 'g-o', label="swipe")
 mic_y, = plt.plot(offsets, error_stats['yin'], 'b-o', label="yin")
