@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.ticker import FuncFormatter
 
-levels = [0.125, 0.25, 0.5, 1]
+levels = [0.015625, 0.03125, 0.0625, 0.125, 0.25, 0.5, 1]
 max_freq_deviation_percentage = 20
 optimal_offsets = {'martin': 16, 'swipe': -4, 'yin': 6}
 
@@ -18,7 +18,10 @@ timestamps = {
     1: '2016-02-24-18-55-41',
     0.5: '2016-02-25-17-43-12',
     0.25: '2016-02-26-00-59-37',
-    0.125: '2016-02-26-08-16-27'
+    0.125: '2016-02-26-08-16-27',
+    0.0625: '2016-02-26-16-36-53',
+    0.03125: '2016-02-27-00-30-17',
+    0.015625: '2016-02-27-08-27-01'
 }
 
 refs_folder = "/home/bdeng/datasets/speechdata_16kHz/ref"
@@ -102,6 +105,7 @@ def to_percent(y, position):
         return s + '%'
 
 formatter = FuncFormatter(to_percent)
+plt.xscale('log', basex=2)
 plt.gca().yaxis.set_major_formatter(formatter)
 
 mic_m, = plt.plot(levels, error_stats['martin'], 'r-o', label="martin")
