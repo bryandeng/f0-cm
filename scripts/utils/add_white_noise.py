@@ -28,7 +28,7 @@ def add_white_noise(src, noise_lambda):
     max_amp_noise = 1 / float(vol_adjustment_noise[:-1])
     max_amp_sum = max_amp_signal + noise_lambda * max_amp_noise
 
-    if max_amp_sum <= 1:
+    if max_amp_sum < 1:
         subprocess.run(
             "sox " + src + " -p synth whitenoise vol " + str(noise_lambda) +
             " | sox -m " + src + " - " + dst,
@@ -40,7 +40,7 @@ def add_white_noise(src, noise_lambda):
             "sox -m " +
             "<( sox " + src + " -p vol " + str(alpha) + " ) " +
             "<( sox " + src + " -p synth whitenoise vol " +
-            str(noise_lambda * alpha) + " ) " +
+            str(noise_lambda * alpha) + " ) " + "-b 16 " +
             dst,
             shell=True, executable="/bin/bash")
 
