@@ -8,7 +8,8 @@ from multiprocessing import Pool
 input_basedir = "/home/bdeng/datasets/speechdata_16kHz_1_5th"
 output_basedir = "/home/bdeng/datasets/speechdata_16kHz_1_5th_noise_added"
 
-noise_lambdas = [0.1, 0.2, 0.4, 0.8]  # signal + noise_lambda * noise
+# signal + noise_lambda * noise
+noise_lambdas = [0.0125, 0.025, 0.05, 0.1, 0.2, 0.4, 0.8]
 
 
 def add_white_noise(src, noise_lambda):

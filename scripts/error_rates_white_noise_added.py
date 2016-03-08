@@ -10,15 +10,20 @@ import numpy as np
 import pandas as pd
 from matplotlib.ticker import FuncFormatter
 
-noise_lambdas = [0, 0.1, 0.2]
+noise_lambdas = [0, 0.0125, 0.025, 0.05, 0.1, 0.2, 0.4, 0.8]
 
 max_freq_deviation_percentage = 20
 optimal_offsets = {'martin': 16, 'swipe': -4, 'yin': 6}
 
 timestamps = {
     0: '2016-02-24-18-55-41',
-    0.1: '2016-03-03-18-36-01',
-    0.2: '2016-03-03-20-03-43'
+    0.0125: '2016-03-08-13-18-01',
+    0.025: '2016-03-08-15-02-00',
+    0.05: '2016-03-08-11-15-03',
+    0.1: '2016-03-07-18-11-28',
+    0.2: '2016-03-07-19-45-54',
+    0.4: '2016-03-07-21-20-54',
+    0.8: '2016-03-07-22-56-11'
 }
 
 refs_folder = "/home/bdeng/datasets/speechdata_16kHz_1_5th/ref"
@@ -107,7 +112,7 @@ plt.gca().yaxis.set_major_formatter(formatter)
 mic_m, = plt.plot(noise_lambdas, error_stats['martin'], 'r-o', label="martin")
 mic_s, = plt.plot(noise_lambdas, error_stats['swipe'], 'g-o', label="swipe")
 mic_y, = plt.plot(noise_lambdas, error_stats['yin'], 'b-o', label="yin")
-plt.legend(handles=[mic_m, mic_s, mic_y])
+plt.legend(handles=[mic_m, mic_s, mic_y], loc='upper left')
 
 os.makedirs('shelf', exist_ok=True)
 plt.savefig(os.path.join('shelf', 'error_rates_white_noise_added.pdf'),
