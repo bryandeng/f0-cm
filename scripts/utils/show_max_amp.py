@@ -6,13 +6,6 @@ from multiprocessing import Pool
 
 dataset = "/home/bdeng/datasets/speechdata_16kHz"
 
-wav_paths = []
-
-for root, dirs, files in os.walk(dataset):
-    for name in files:
-        if name.startswith('mic'):
-            wav_paths.append(os.path.join(root, name))
-
 
 def vol_adjustment(src):
     vol_adjustment = subprocess.run(
@@ -21,6 +14,13 @@ def vol_adjustment(src):
         universal_newlines=True
     ).stderr
     return float(vol_adjustment[:-1])
+
+wav_paths = []
+
+for root, dirs, files in os.walk(dataset):
+    for name in files:
+        if name.startswith('mic'):
+            wav_paths.append(os.path.join(root, name))
 
 pool = Pool()
 vol_adjustments = pool.map(vol_adjustment, wav_paths)
