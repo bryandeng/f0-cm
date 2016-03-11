@@ -6,7 +6,7 @@ from itertools import product
 from multiprocessing import Pool
 
 input_basedir = "/home/bdeng/datasets/speechdata_16kHz_1_5th"
-output_basedir = "/home/bdeng/datasets/speechdata_16kHz_1_5th_noise_added"
+output_basedir = "/home/bdeng/datasets/speechdata_16kHz_1_5th_with_white_noise"
 
 # signal + noise_lambda * noise
 noise_lambdas = [0.0125, 0.025, 0.05, 0.1, 0.2, 0.4, 0.8]
@@ -44,7 +44,6 @@ def add_white_noise(src, noise_lambda):
             str(noise_lambda * alpha) + " ) " + "-b 16 " +
             dst,
             shell=True, executable="/bin/bash")
-
 
 wav_paths = []
 
