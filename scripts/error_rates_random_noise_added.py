@@ -5,9 +5,11 @@ import shelve
 from itertools import product, repeat
 from multiprocessing import Pool
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.ticker import FuncFormatter
 from mpl_toolkits.axes_grid1.inset_locator import (mark_inset,
                                                    zoomed_inset_axes)
 
@@ -126,6 +128,21 @@ fig.suptitle("Error rates when random noise is added (1/5 dataset)",
 ax = fig.add_subplot(111)
 ax.set_xlabel("noise level")
 ax.set_ylabel("error rate")
+
+
+def to_percent(y, position):
+    # Ignore the passed in position. This has the effect of scaling the default
+    # tick locations.
+    s = str(100 * y)
+
+    # The percent symbol needs escaping in latex
+    if matplotlib.rcParams['text.usetex'] is True:
+        return s + r'$\%$'
+    else:
+        return s + '%'
+
+formatter = FuncFormatter(to_percent)
+plt.gca().yaxis.set_major_formatter(formatter)
 
 for noise, method in product(noise_names, methods):
     ax.plot(noise_lambdas, error_stats[noise][method], color=colors[noise],
