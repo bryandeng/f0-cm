@@ -123,7 +123,7 @@ mic_y, = plt.plot(levels, error_stats['yin'], 'b-o', label="yin")
 plt.legend(handles=[mic_m, mic_s, mic_y])
 
 os.makedirs('shelf', exist_ok=True)
-plt.savefig(os.path.join('shelf', 'error_rates_vs_signal_levels.pdf'),
+plt.savefig(os.path.join('../../gallery', 'error_rates_vs_signal_levels.pdf'),
             papertype='a4')
 
 print("Done.")

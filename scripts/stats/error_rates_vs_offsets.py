@@ -133,7 +133,7 @@ mic_m, = plt.plot(offsets, error_stats['martin'], 'r-o', label="martin")
 mic_s, = plt.plot(offsets, error_stats['swipe'], 'g-o', label="swipe")
 mic_y, = plt.plot(offsets, error_stats['yin'], 'b-o', label="yin")
 plt.legend(handles=[mic_m, mic_s, mic_y])
-plt.savefig(os.path.join('shelf', 'error_rates_vs_offsets.pdf'),
+plt.savefig(os.path.join('../../gallery', 'error_rates_vs_offsets.pdf'),
             papertype='a4')
 
 print("Done.")

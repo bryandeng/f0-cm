@@ -164,7 +164,7 @@ plt.xticks(visible=False)
 plt.yticks(visible=False)
 mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.8")
 
-plt.savefig(os.path.join('shelf', 'error_rates_random_noise_added.pdf'),
+plt.savefig(os.path.join('../../gallery', 'error_rates_random_noise_added.pdf'),
             papertype='a4')
 
 print("Done.")
