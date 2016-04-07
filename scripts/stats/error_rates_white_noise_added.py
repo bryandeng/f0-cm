@@ -63,7 +63,7 @@ def error_count(ref, method, level, offset):
     result_values_interpolated = result_values.interpolate(method='nearest')
 
     diff = result_values_interpolated.loc[ref_values.index] - ref_values
-    ref_values_no_zero = ref_values[ref_values == 0] = 100
+    ref_values_no_zero = ref_values.replace(0.0, 100.0)
     # the best denominator to filter out false positive voiced values, for
     # that human voice is always higher than 100 * 20% = 20 Hz
     deviation = diff.abs() / ref_values_no_zero

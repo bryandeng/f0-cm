@@ -46,7 +46,7 @@ def estimation_correctness(ref, method):
 
     estimated_values = result_values_interpolated.loc[ref_values.index]
     diff = estimated_values - ref_values
-    ref_values_no_zero = ref_values[ref_values == 0] = 100
+    ref_values_no_zero = ref_values.replace(0.0, 100.0)
     deviation = diff.abs() / ref_values_no_zero
 
     correctness = deviation < max_freq_deviation_percentage / 100
