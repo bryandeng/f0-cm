@@ -15,6 +15,7 @@ mfcc_folder = "/home/bdeng/datasets/mfcc_text_1_5th"
 
 hdf5_path = "/home/bdeng/datasets/f0_estimation_data.h5"
 
+
 def estimation_correctness(ref, method):
     ref_values = pd.read_csv(
         os.path.join(refs_folder, ref),
@@ -40,9 +41,11 @@ def estimation_correctness(ref, method):
     )
     result_values.index += optimal_offsets[method]
     result_values = result_values.reindex(
-        range(0, max(ref_values.index[-1], result_values.index[-1])+1)
+        range(min(ref_values.index[0], result_values.index[0]),
+              max(ref_values.index[-1], result_values.index[-1])+1)
     )
     result_values_interpolated = result_values.interpolate(method='nearest')
+    result_values_interpolated.fillna(0.0, inplace=True)
 
     estimated_values = result_values_interpolated.loc[ref_values.index]
     diff = estimated_values - ref_values

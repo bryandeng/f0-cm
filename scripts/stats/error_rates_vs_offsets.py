@@ -61,9 +61,11 @@ def error_count(ref, method, offset):
     )
     result_values.index += offset
     result_values = result_values.reindex(
-        range(0, max(ref_values.index[-1], result_values.index[-1])+1)
+        range(min(ref_values.index[0], result_values.index[0]),
+              max(ref_values.index[-1], result_values.index[-1])+1)
     )
     result_values_interpolated = result_values.interpolate(method='nearest')
+    result_values_interpolated.fillna(0.0, inplace=True)
 
     diff = result_values_interpolated.loc[ref_values.index] - ref_values
     ref_values_no_zero = ref_values.replace(0.0, 100.0)
