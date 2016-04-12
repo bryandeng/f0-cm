@@ -73,12 +73,18 @@ for mfcc_file in os.listdir(mfcc_folder):
     mfcc_column_multiindex = pd.MultiIndex.from_product(
         [['mfcc'], mfcc_coeffs.columns])
     mfcc_coeffs.columns = mfcc_column_multiindex
-
     data_per_file = mfcc_coeffs
+
+    e, c = {}, {}
     for method in methods:
         estimated_values, correctness = estimation_correctness(ref, method)
-        data_per_file['estimated', method] = estimated_values
-        data_per_file['correctness', method] = correctness
+        e[method], c[method] = estimated_values, correctness
+
+    for method in methods:
+        data_per_file[('estimated', method)] = e[method]
+    for method in methods:
+        data_per_file[('correctness', method)] = c[method]
+
     data_per_file.dropna(inplace=True)
     data[wav_basename] = data_per_file
 
