@@ -3,6 +3,7 @@
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from keras.optimizers import SGD
+from keras.utils.visualize_util import plot
 
 from speech_data import load_data
 
@@ -20,9 +21,11 @@ model.compile(loss='binary_crossentropy',
               optimizer='sgd',
               metrics=["accuracy"])
 model.fit(X_train, y_train,
-          nb_epoch=20,
+          nb_epoch=40,
           batch_size=32)
 score = model.evaluate(X_test, y_test, batch_size=32)
 
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+plot(model, to_file='model-mlp.png', show_shapes=True)
