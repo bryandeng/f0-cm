@@ -116,7 +116,6 @@ mic_s, = plt.plot(noise_lambdas, error_stats['swipe'], 'g-o', label="swipe")
 mic_y, = plt.plot(noise_lambdas, error_stats['yin'], 'b-o', label="yin")
 plt.legend(handles=[mic_m, mic_s, mic_y], loc='upper left')
 
-os.makedirs('shelf', exist_ok=True)
 plt.savefig(os.path.join('../../gallery', 'error_rates_white_noise_added.pdf'),
             papertype='a4')
 
