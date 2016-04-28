@@ -55,3 +55,10 @@
 2016-03-13-18-17-10	starting: 0, -t: 10, white noise (file): 0.2
 2016-03-13-19-47-38	starting: 0, -t: 10, white noise (file): 0.4
 2016-03-13-21-18-03	starting: 0, -t: 10, white noise (file): 0.8
+
+2016-04-27-19-51-26 starting: 0, -t: 10, random noise: SNR 20 dB
+2016-04-27-21-19-13 starting: 0, -t: 10, random noise: SNR 15 dB
+2016-04-27-22-46-29 starting: 0, -t: 10, random noise: SNR 10 dB
+2016-04-28-00-14-01 starting: 0, -t: 10, random noise: SNR 5 dB
+2016-04-28-01-41-45 starting: 0, -t: 10, random noise: SNR 0 dB
+2016-04-28-03-09-25 starting: 0, -t: 10, random noise: SNR -5 dB
