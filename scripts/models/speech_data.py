@@ -10,7 +10,7 @@ df = pd.read_hdf(hdf5_path, 'f0_estimation')
 mfcc_values = df.xs('mfcc', axis=1, level=0).values
 
 
-def load_data(method, test_split=0.1):
+def load_shuffled_points(method, test_split=0.1):
     estimated_values = df.loc[:, ('estimated', method)].values
 
     X = np.concatenate((mfcc_values, np.reshape(estimated_values, (-1, 1))),

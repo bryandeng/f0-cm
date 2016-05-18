@@ -9,7 +9,7 @@ from keras.optimizers import SGD
 from keras.utils.visualize_util import plot
 from sklearn.metrics import confusion_matrix
 
-from speech_data import load_data
+from speech_data import load_shuffled_points
 
 parser = argparse.ArgumentParser(
     description='Run the MLP classifier.')
@@ -18,7 +18,8 @@ parser.add_argument('method',
 args = parser.parse_args()
 method = args.method
 
-(X_train, y_train), (X_test, y_test) = load_data(method, test_split=0.1)
+(X_train, y_train), (X_test, y_test) = load_shuffled_points(method,
+                                                            test_split=0.1)
 weights_file = os.path.join('shelf', 'mlp_model_weights-' + method + '.h5')
 
 model = Sequential()
