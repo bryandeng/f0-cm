@@ -11,15 +11,16 @@ from sklearn.metrics import confusion_matrix
 
 from speech_data import load_shuffled_points
 
-parser = argparse.ArgumentParser(
-    description='Run the MLP classifier.')
+batch_size = 32
+
+parser = argparse.ArgumentParser(description='Run the MLP classifier.')
 parser.add_argument('method',
                     help="which algorithm's data to use (martin/swipe/yin)")
 args = parser.parse_args()
 method = args.method
 
 (X_train, y_train), (X_test, y_test) = load_shuffled_points(method,
-                                                            test_split=0.1)
+                                                            test_split=0.2)
 weights_file = os.path.join('shelf', 'mlp_model_weights-' + method + '.h5')
 
 model = Sequential()
@@ -41,11 +42,12 @@ if os.path.exists(weights_file):
 else:
     model.fit(X_train, y_train,
               nb_epoch=40,
-              batch_size=32)
+              batch_size=batch_size,
+              validation_split=0.2)
     model.save_weights(weights_file)
 
-predicted_classes = model.predict_classes(X_test, batch_size=32)
-loss_and_metrics = model.evaluate(X_test, y_test, batch_size=32)
+predicted_classes = model.predict_classes(X_test, batch_size=batch_size)
+loss_and_metrics = model.evaluate(X_test, y_test, batch_size=batch_size)
 
 print('Test loss:', loss_and_metrics[0])
 print('Test accuracy:', loss_and_metrics[1])
