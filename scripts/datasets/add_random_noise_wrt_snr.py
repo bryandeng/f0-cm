@@ -3,12 +3,13 @@
 import os
 import subprocess
 
-snrs = [20, 15, 10, 5, 0, -5]  # dB
+# snrs = [20, 15, 10, 5, 0, -5]  # dB
+snrs = [-5]  # highly distorted, provide more negative samples for classifiers
 
-input_basedir = "/home/bdeng/datasets/speechdata_16kHz_1_5th"
+input_basedir = "/home/bdeng/datasets/speechdata_16kHz"
 noise_file = "/home/bdeng/datasets/noises_16kHz/concatenated.raw"
 output_basedir = ("/home/bdeng/datasets/" +
-                  "speechdata_16kHz_1_5th_with_noise_wrt_snr")
+                  "speechdata_16kHz_with_noise_wrt_snr")
 fant_path = "/home/bdeng/Documents/fant/filter_add_noise"
 
 input_raw_basedir = input_basedir + '_raw'
