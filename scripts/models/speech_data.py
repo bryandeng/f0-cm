@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 
 import math
+import os
 
 import numpy as np
 import pandas as pd
 from sklearn import cross_validation, preprocessing
 
-hdf5_path = "/home/bdeng/datasets/f0_estimation_data.h5"
-df = pd.read_hdf(hdf5_path, 'f0_estimation')
+hdf5_basedir = "/home/bdeng/datasets"
+
+
+def load_dataframe(method):
+    hdf5_path = os.path.join(hdf5_basedir, "features_data_" + method + ".h5")
+    df = pd.read_hdf(hdf5_path, 'features')
+    return df
 
 
 def load_shuffled_points(method, test_split=0.2):
     # actually by default, Keras also shuffles samples during training
-    mfcc_values = df.xs('mfcc', axis=1, level=0).values
-    estimated_values = df.loc[:, ('estimated', method)].values
-
-    X = np.concatenate((mfcc_values, np.reshape(estimated_values, (-1, 1))),
-                       axis=1)
-    y = df.loc[:, ('correctness', method)].values.astype(int)
+    df = load_dataframe(method)
+    X = df.drop('correctness', axis=1).values
+    y = df.loc[:, 'correctness'].values.astype(int)
 
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(
         X, y, test_size=test_split, random_state=0)
@@ -30,12 +33,8 @@ def load_shuffled_points(method, test_split=0.2):
 
 
 def load_sequences(method, sequence_length=3, test_split=0.2):
-    mfcc = df.xs('mfcc', axis=1, level=0)
-    estimated = df.loc[:, ('estimated', method)]
-    correctness = df.loc[:, ('correctness', method)]
-    df_method = pd.concat([mfcc, estimated, correctness], axis=1)
-
-    grouped_per_audio_file = df_method.groupby(level=0, sort=False)
+    df = load_dataframe(method)
+    grouped_per_audio_file = df.groupby(level=0, sort=False)
     dfs_per_audio = [group for name, group in grouped_per_audio_file]
     # for convenience, test_split is w.r.t number of audio files
     n_train = math.floor(len(dfs_per_audio) * (1.0 - test_split))

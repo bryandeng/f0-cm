@@ -9,14 +9,15 @@ max_freq_deviation_percentage = 20
 methods = ['martin', 'swipe', 'yin']
 optimal_offsets = {'martin': 16, 'swipe': -4, 'yin': 6}
 
-refs_folder = "/home/bdeng/datasets/speechdata_16kHz_1_5th/ref"
-results_folder = "/home/bdeng/datasets/results/2016-02-24-18-55-41"
-mfcc_folder = "/home/bdeng/datasets/mfcc_text_1_5th"
+refs_folder = "/home/bdeng/datasets/speechdata_16kHz/ref"
+features_folders = {
+    'original_audio': "/home/bdeng/datasets/features/2016-06-07-17-57-51",
+    'distorted_audio': "/home/bdeng/datasets/features/2016-06-08-03-24-28"}
 
-hdf5_path = "/home/bdeng/datasets/f0_estimation_data.h5"
+hdf5_basedir = "/home/bdeng/datasets"
 
 
-def estimation_correctness(ref, method):
+def create_samples(ref, features_folder, method):
     ref_values = pd.read_csv(
         os.path.join(refs_folder, ref),
         sep=' ',
@@ -28,17 +29,15 @@ def estimation_correctness(ref, method):
     )
     ref_values.index = ref_values.index * 10 + 16
 
-    result = 'mic' + ref[3:-3] + '.' + method + '.f0'
-    result_values = pd.read_csv(
-        os.path.join(results_folder, result),
-        header=None,
+    features_file = 'mic' + ref[3:-3] + '.' + method + '.features'
+    feature_values = pd.read_csv(
+        os.path.join(features_folder, features_file),
         index_col=0,
-        names=['f0'],
-        skiprows=11,
-        dtype={0: np.int64, 1: np.float64},
+        skiprows=14,
         delim_whitespace=True,
-        squeeze=True,
     )
+
+    result_values = feature_values.loc[:, 'f00_hz']
     result_values.index += optimal_offsets[method]
     result_values = result_values.reindex(
         range(min(ref_values.index[0], result_values.index[0]),
@@ -53,41 +52,20 @@ def estimation_correctness(ref, method):
     deviation = diff.abs() / ref_values_no_zero
 
     correctness = deviation < max_freq_deviation_percentage / 100
-    return estimated_values, correctness
+    feature_values['correctness'] = correctness
+    # reference has fewer estimations near the end of audio file
+    feature_values.dropna(inplace=True)
+    return feature_values
 
-data = {}
-
-for mfcc_file in os.listdir(mfcc_folder):
-    wav_basename = os.path.splitext(mfcc_file)[0]
-    ref = 'ref' + wav_basename[3:] + '.f0'
-
-    mfcc_coeffs = pd.read_csv(
-        os.path.join(mfcc_folder, mfcc_file),
-        header=None,
-        usecols=range(1, 14),
-        skiprows=4,
-        delim_whitespace=True,
-    )
-    # align with estimations, the actual timing is 12.8 ms, 22.8ms, 32.8 ms...
-    mfcc_coeffs.index = mfcc_coeffs.index * 10 + 16
-    mfcc_column_multiindex = pd.MultiIndex.from_product(
-        [['mfcc'], mfcc_coeffs.columns])
-    mfcc_coeffs.columns = mfcc_column_multiindex
-    data_per_file = mfcc_coeffs
-
-    e, c = {}, {}
-    for method in methods:
-        estimated_values, correctness = estimation_correctness(ref, method)
-        e[method], c[method] = estimated_values, correctness
-
-    for method in methods:
-        data_per_file[('estimated', method)] = e[method]
-    for method in methods:
-        data_per_file[('correctness', method)] = c[method]
-
-    data_per_file.dropna(inplace=True)
-    data[wav_basename] = data_per_file
-
-dataframe = pd.concat(data)
-print(dataframe)
-dataframe.to_hdf(hdf5_path, 'f0_estimation')
+for method in methods:
+    data = {}
+    for ref in os.listdir(refs_folder):
+        wav_basename = 'mic' + ref[3:-3]
+        data[wav_basename] = create_samples(
+            ref, features_folders['original_audio'], method)
+        data[wav_basename+'_distorted'] = create_samples(
+            ref, features_folders['distorted_audio'], method)
+    dataframe = pd.concat(data)
+    print(dataframe)
+    hdf5_path = os.path.join(hdf5_basedir, "features_data_" + method + ".h5")
+    dataframe.to_hdf(hdf5_path, 'features')
