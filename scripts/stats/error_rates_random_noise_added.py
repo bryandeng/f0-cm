@@ -170,4 +170,46 @@ plt.savefig(os.path.join('../../gallery',
                          'error_rates_random_noise_added.pdf'),
             papertype='a4')
 
+for noise in noise_names:
+    fig_per_noise = plt.figure()
+    fig_per_noise.suptitle(
+        "Error rates when random noise is added "
+        "(sampled from same noise file)",
+        fontsize=14, fontweight='bold')
+    ax = fig_per_noise.add_subplot(111)
+    ax.set_xlabel("noise level")
+    ax.set_ylabel("error rate")
+    plt.gca().yaxis.set_major_formatter(formatter)
+
+    for method in methods:
+        ax.plot(noise_lambdas, error_stats[noise][method], color=colors[noise],
+                linestyle='solid', marker=markers[method], markersize=4,
+                label=noise + ' ' + method)
+
+    ax.legend(loc='upper left')
+    plt.savefig(os.path.join('../../gallery',
+                             'error_rates_random_noise_' + noise + '.pdf'),
+                papertype='a4')
+
+for method in methods:
+    fig_per_method = plt.figure()
+    fig_per_method.suptitle(
+        "Error rates when random noise is added "
+        "(for same estimation algorithm)",
+        fontsize=14, fontweight='bold')
+    ax = fig_per_method.add_subplot(111)
+    ax.set_xlabel("noise level")
+    ax.set_ylabel("error rate")
+    plt.gca().yaxis.set_major_formatter(formatter)
+
+    for noise in noise_names:
+        ax.plot(noise_lambdas, error_stats[noise][method], color=colors[noise],
+                linestyle='solid', marker=markers[method], markersize=4,
+                label=noise + ' ' + method)
+
+    ax.legend(loc='upper left')
+    plt.savefig(os.path.join('../../gallery',
+                             'error_rates_random_noise_' + method + '.pdf'),
+                papertype='a4')
+
 print("Done.")
