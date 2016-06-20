@@ -13,7 +13,7 @@ from sklearn.metrics import (confusion_matrix, normalized_mutual_info_score,
 from speech_data import load_sequences
 
 batch_size = 16
-input_length = 2
+input_length = 4
 
 parser = argparse.ArgumentParser(description='Run the LSTM classifier.')
 parser.add_argument('method',
