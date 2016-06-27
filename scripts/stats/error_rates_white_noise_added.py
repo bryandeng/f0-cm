@@ -94,7 +94,7 @@ for method in ['martin', 'swipe', 'yin']:
 plt.title("Error rates when white noise is added (1/5 dataset)", fontsize=14,
           fontweight='bold')
 plt.xlabel("white noise level")
-plt.ylabel("error rate")
+plt.ylabel("F0 estimation error rate")
 
 
 def to_percent(y, position):

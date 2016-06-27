@@ -101,7 +101,7 @@ for method in ['martin', 'swipe', 'yin']:
 plt.title("Error rates under different signal levels", fontsize=14,
           fontweight='bold')
 plt.xlabel("level (relative proportion)")
-plt.ylabel("error rate")
+plt.ylabel("F0 estimation error rate")
 
 
 def to_percent(y, position):

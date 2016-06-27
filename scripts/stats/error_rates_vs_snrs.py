@@ -89,10 +89,10 @@ for method in ['martin', 'swipe', 'yin']:
     error_stats[method] = [error_rate(method, level, optimal_offsets[method])
                            for level in snrs]
 
-plt.title("Error rates when random noise at certain SNR is added "
+plt.title("Error rates when random noise at certain SNR is added \n"
           "(1/5 dataset)", fontsize=14, fontweight='bold')
 plt.xlabel("signal-to-noise ratio (dB)")
-plt.ylabel("error rate")
+plt.ylabel("F0 estimation error rate")
 
 
 def to_percent(y, position):

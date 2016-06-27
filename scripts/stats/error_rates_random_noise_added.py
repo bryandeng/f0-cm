@@ -123,14 +123,6 @@ colors = {'babble': 'red', 'factory1': 'green', 'factory2': 'blue',
           'pink': 'magenta', 'white': 'cyan'}
 markers = {'martin': 'o', 'swipe': 's', 'yin': 'D'}
 
-fig = plt.figure()
-fig.suptitle("Error rates when random noise is added (1/5 dataset)",
-             fontsize=14, fontweight='bold')
-
-ax = fig.add_subplot(111)
-ax.set_xlabel("noise level")
-ax.set_ylabel("error rate")
-
 
 def to_percent(y, position):
     # Ignore the passed in position. This has the effect of scaling the default
@@ -144,41 +136,16 @@ def to_percent(y, position):
         return s + '%'
 
 formatter = FuncFormatter(to_percent)
-plt.gca().yaxis.set_major_formatter(formatter)
-
-for noise, method in product(noise_names, methods):
-    ax.plot(noise_lambdas, error_stats[noise][method], color=colors[noise],
-            linestyle='solid', marker=markers[method], markersize=2,
-            label=noise + ' ' + method)
-
-ax.legend(loc='upper left', fontsize='xx-small')
-
-axins = zoomed_inset_axes(ax, 25, loc=9)
-
-for noise, method in product(noise_names, ['martin', 'swipe']):
-    axins.plot(noise_lambdas[1:3], error_stats[noise][method][1:3],
-               color=colors[noise], linestyle='solid', marker=markers[method],
-               markersize=1)
-
-axins.set_ylim(0.0838, 0.088)
-
-plt.xticks(visible=False)
-plt.yticks(visible=False)
-mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.8")
-
-plt.savefig(os.path.join('../../gallery',
-                         'error_rates_random_noise_added.pdf'),
-            papertype='a4')
 
 for noise in noise_names:
     fig_per_noise = plt.figure()
     fig_per_noise.suptitle(
-        "Error rates when random noise is added "
-        "(sampled from same noise file)",
+        "Error rates when random noise is added \n"
+        "(sampled from same noise file, 1/5 dataset)",
         fontsize=14, fontweight='bold')
     ax = fig_per_noise.add_subplot(111)
     ax.set_xlabel("noise level")
-    ax.set_ylabel("error rate")
+    ax.set_ylabel("F0 estimation error rate")
     plt.gca().yaxis.set_major_formatter(formatter)
 
     for method in methods:
@@ -194,12 +161,12 @@ for noise in noise_names:
 for method in methods:
     fig_per_method = plt.figure()
     fig_per_method.suptitle(
-        "Error rates when random noise is added "
-        "(for same estimation algorithm)",
+        "Error rates when random noise is added \n"
+        "(for same estimation algorithm, 1/5 dataset)",
         fontsize=14, fontweight='bold')
     ax = fig_per_method.add_subplot(111)
     ax.set_xlabel("noise level")
-    ax.set_ylabel("error rate")
+    ax.set_ylabel("F0 estimation error rate")
     plt.gca().yaxis.set_major_formatter(formatter)
 
     for noise in noise_names:

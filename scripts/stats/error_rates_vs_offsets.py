@@ -114,7 +114,7 @@ with shelve.open(os.path.join('shelf', 'data.' + timestamp + '.shelve')) as db:
 plt.title("Error rates under different offsets", fontsize=14,
           fontweight='bold')
 plt.xlabel("offset (ms)")
-plt.ylabel("error rate")
+plt.ylabel("F0 estimation error rate")
 
 
 def to_percent(y, position):
