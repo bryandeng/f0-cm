@@ -32,12 +32,14 @@ model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
 
+plot(model, to_file='shelf/model-mlp.png', show_shapes=True)
+json_string = model.to_json()
+open(os.path.join('shelf', 'mlp_model.json'), 'w').write(json_string)
+
 sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(loss='binary_crossentropy',
               optimizer='sgd',
               metrics=["accuracy"])
-
-plot(model, to_file='shelf/model-mlp.png', show_shapes=True)
 
 if os.path.exists(weights_file):
     model.load_weights(weights_file)

@@ -36,11 +36,13 @@ model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
 
+plot(model, to_file='shelf/model-lstm.png', show_shapes=True)
+json_string = model.to_json()
+open(os.path.join('shelf', 'lstm_model.json'), 'w').write(json_string)
+
 model.compile(loss='binary_crossentropy',
               optimizer='sgd',
               metrics=["accuracy"])
-
-plot(model, to_file='shelf/model-lstm.png', show_shapes=True)
 
 if os.path.exists(weights_file):
     model.load_weights(weights_file)
