@@ -6,6 +6,7 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn import cross_validation, preprocessing
+from sklearn.externals import joblib
 
 hdf5_basedir = "/home/bdeng/datasets"
 
@@ -29,6 +30,7 @@ def load_shuffled_points(method, test_split=0.2):
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
 
+    joblib.dump(scaler, os.path.join('shelf', 'mlp_normalizer.pkl'))
     return (X_train, y_train), (X_test, y_test)
 
 
@@ -62,4 +64,5 @@ def load_sequences(method, sequence_length=3, test_split=0.2):
     X_train, y_train = np.asarray(X_train), np.hstack(y_train)
     X_test, y_test = np.asarray(X_test), np.hstack(y_test)
 
+    joblib.dump(scaler, os.path.join('shelf', 'lstm_normalizer.pkl'))
     return (X_train, y_train), (X_test, y_test)
