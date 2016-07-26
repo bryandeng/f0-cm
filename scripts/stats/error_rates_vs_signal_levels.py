@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import shelve
 from itertools import repeat
 from multiprocessing import Pool
 
@@ -93,10 +94,16 @@ def error_rate(method, level, offset):
     n_errors_total = sum(error_count_[1] for error_count_ in error_counts)
     return n_errors_total/n_values_total
 
-error_stats = {}
-for method in ['martin', 'swipe', 'yin']:
-    error_stats[method] = [error_rate(method, level, optimal_offsets[method])
-                           for level in levels]
+with shelve.open(os.path.join('shelf', 'data.for_signal_level.shelve')) as db:
+    if 'error_stats' in db:
+        error_stats = db['error_stats']
+    else:
+        error_stats = {}
+        for method in ['martin', 'swipe', 'yin']:
+            error_stats[method] = [
+                error_rate(method, level, optimal_offsets[method])
+                for level in levels]
+        db['error_stats'] = error_stats
 
 plt.title("Error rates under different signal levels", fontsize=14,
           fontweight='bold')
