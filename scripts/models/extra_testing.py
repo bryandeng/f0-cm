@@ -38,6 +38,8 @@ lstm_model.compile(loss='binary_crossentropy',
                    optimizer='sgd',
                    metrics=["accuracy"])
 
+mlp_metrics = {}
+lstm_metrics = {}
 mlp_metrics_on_voiced = {}
 mlp_metrics_on_unvoiced = {}
 lstm_metrics_on_voiced = {}
@@ -51,6 +53,8 @@ for method in methods:
 
     for snr in snrs:
         (X, y), ref_voiced = load_points(method, snr)
+        mlp_metrics[(method, snr)] = model_metrics(
+            mlp_model, X, y, batch_size=32)
         metrics_on_voiced = model_metrics(
             mlp_model, X[ref_voiced == 1], y[ref_voiced == 1], batch_size=32)
         metrics_on_unvoiced = model_metrics(
@@ -60,6 +64,8 @@ for method in methods:
 
         (X_seq, y), ref_voiced = load_sequences(method, snr,
                                                 sequence_length=input_length)
+        lstm_metrics[(method, snr)] = model_metrics(
+            lstm_model, X_seq, y, batch_size=16)
         metrics_on_voiced = model_metrics(
             lstm_model, X_seq[ref_voiced == 1], y[ref_voiced == 1],
             batch_size=16)
@@ -70,6 +76,8 @@ for method in methods:
         lstm_metrics_on_unvoiced[(method, snr)] = metrics_on_unvoiced
 
 with shelve.open(os.path.join('shelf', 'metrics.shelve')) as db:
+    db['mlp_metrics'] = mlp_metrics
+    db['lstm_metrics'] = lstm_metrics
     db['mlp_metrics_on_voiced'] = mlp_metrics_on_voiced
     db['mlp_metrics_on_unvoiced'] = mlp_metrics_on_unvoiced
     db['lstm_metrics_on_voiced'] = lstm_metrics_on_voiced
