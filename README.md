@@ -19,3 +19,6 @@ External tools:
 
 ## Usage
 Detailed documentation is available [here](doc/documentation.md).
+
+## Publications
+[thesis](doc/thesis.pdf) ([abstract](doc/abstract.pdf))
